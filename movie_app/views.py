@@ -48,7 +48,7 @@ def get_review(request):
 
 @api_view(['GET'])
 def get_review_id(request, review_id):
-    review = Review.objects.get(id=review_id)
+    review = Review.objects.filter(id=review_id)
 
     serializer = ReviewDetailSerializer(review, many=False)
 
