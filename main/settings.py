@@ -40,10 +40,18 @@ INSTALLED_APPS = [
 
     #downloaded apps
     'rest_framework',
+    'rest_framework.authtoken',
 
     #my apps
     'movie_app',
+    'users',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTENTICATION_CLASSES': [
+        'rest_framework.autentication.TokenAutentication'
+    ]
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -127,3 +135,5 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+

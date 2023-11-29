@@ -1,10 +1,10 @@
 from django.shortcuts import render
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from movie_app.models import Director, Movie, Review
 from movie_app.serializers import DirectorSerializer, DirectorDetailSerializer, MovieSerializer, MovieDetailSerializer, \
 ReviewSerializer, ReviewDetailSerializer
-
+from rest_framework.permissions import IsAuthenticated
 
 @api_view(['GET', 'POST'])
 def get_director(request):
@@ -16,11 +16,9 @@ def get_director(request):
         return Response(serializer.data)
 
     elif request.method == 'POST':
-        name = request.data.get('name')
-
-        director = Director.objects.create(
-            name=name
-        )
+        serializer = DirectorValidateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        director = serializer.save()
 
         serializer = DirectorSerializer(director, many=True)
 
@@ -44,9 +42,9 @@ def get_director_id(request, director_id):
         return Response(serializer.data)
 
     if request.method == 'PUT':
-        director.name = request.data.get('name', director.name)
-
-        director.save()
+        serializer = DirectorValidateSerializer(instance=news, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        news = serializer.update(instance=director, validated_data=serializer.validated_data)
 
         serializer = DirectorDetailSerializer(instance=director, many=False)
 
@@ -68,6 +66,7 @@ def get_director_id(request, director_id):
         )
 
 @api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
 def get_movie(request):
     if request.method == 'GET':
         movie = Movie.objects.all()
@@ -77,16 +76,9 @@ def get_movie(request):
         return Response(serializer.data)
 
     elif request.method == 'POST':
-        title = request.data.get('title')
-        description = request.data.get('description')
-        duration = request.data.get('duration')
-        director = request.data.get('director')
-
-        movie = Movie.objects.create(
-            title=title,
-            description=description,
-            duration=duration,
-        )
+        serializer = MovieValidateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        movie = serializer.save()
 
         serializer = MovieSerializer(movie, many=True)
 
@@ -99,6 +91,7 @@ def get_movie(request):
         )
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
 def get_movie_id(request, movie_id):
     try:
         movie = Movie.objects.get(id=movie_id)
@@ -110,12 +103,9 @@ def get_movie_id(request, movie_id):
         return Response(serializer.data)
 
     if request.method == 'PUT':
-        movie.title = request.data.get('title', movie.title)
-        movie.description = request.data.get('description', movie.description)
-        movie.duration = request.data.get('duration', movie.duration)
-
-
-        movie.save()
+        serializer = MovieValidateSerializer(instance=news, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        news = serializer.update(instance=movie, validated_data=serializer.validated_data)
 
         serializer = MovieDetailSerializer(instance=movie, many=False)
 
@@ -147,15 +137,9 @@ def get_review(request):
         return Response(serializer.data)
 
     elif request.method == 'POST':
-        text = request.data.get('text')
-        rate_stars = request.data.get('rate_stars')
-        movie = request.data.get('movie')
-
-        review = Review.objects.create(
-            text=text,
-            rate_stars=rate_stars,
-            movie=movie
-        )
+        serializer = ReviewValidateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        review = serializer.save()
 
         serializer = ReviewSerializer(review, many=True)
 
@@ -179,21 +163,19 @@ def get_review_id(request, review_id):
         return Response(serializer.data)
 
     if request.method == 'PUT':
-       text = request.data.get('text', review.text)
-       rate_stars = request.data.get('rate_stars', review.rate_stars)
-       movie = request.data.get('movie', review.movie)
+        serializer = ReviewValidateSerializer(instance=news, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        review = serializer.update(instance=news, validated_data=serializer.validated_data)
 
-       review.save()
+        serializer = MovieDetailSerializer(instance=review, many=False)
 
-       serializer = MovieDetailSerializer(instance=review, many=False)
-
-       return Response(
+        return Response(
            data={
                "message": "updated",
                "data": serializer.data
            },
            status=200
-       )
+        )
 
     if request.method == 'DELETE':
         review.delete()
