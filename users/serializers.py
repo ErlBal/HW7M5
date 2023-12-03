@@ -17,7 +17,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
            'password': {'write_only': True}
        }
 
-class VerifySerializer(serializers.ModelSerializer):
+class ConfirmSerializer(serializers.ModelSerializer):
     class Meta:
         model = VerificationCode
         fields = ('code',)

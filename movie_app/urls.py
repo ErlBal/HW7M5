@@ -3,10 +3,10 @@ from movie_app import views
 
 
 urlpatterns = [
-    path('director/', views.get_director),
-    path('director/<int:director_id>/', views.get_director_id),
-    path('movie/', views.get_movie),
-    path('movie/<int:movie_id>/', views.get_movie_id),
-    path('review/', views.get_review),
-    path('review/<int:review_id>/', views.get_review_id)
+    path('director/', views.DirectorListCreateAPIView.as_view()),
+    path('director/<int:director_id>/', views.DirectorIdRetrieveUpdateDestroyAPIView.as_view()),
+    path('movie/', views.MovieListCreateAPIView.as_view()),
+    path('movie/<int:id>/', views.MovieIdRetrieveUpdateDestroyAPIView.as_view()),
+    path('review/', views.ReviewListCreateAPIView.as_view()),
+    path('review/<int:id>/', views.ReviewIdRetrieveUpdateDestroyAPIView.as_view())
 ]
